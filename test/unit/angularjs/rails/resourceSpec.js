@@ -359,6 +359,30 @@ describe('railsResourceFactory', function () {
             expect(result).toEqualData({id: 123, abc: 'xyz', xyz: 'abc', extra: 'test'});
         });
 
+        it('should be able to get an existing resource to retrieve server-side updates', function () {
+            var promise, result;
+
+            $httpBackend.expectGET('/test/123').respond(200, {test: {id: 123, abc: 'xyz', xyz: 'abcd'}});
+
+            expect(promise = Test.get(123)).toBeDefined();
+
+            promise.then(function (response) {
+              result = response;
+            });
+
+            $httpBackend.flush();
+
+            expect(result).toBeInstanceOf(Test);
+            expect(result).toEqualData({id: 123, abc: 'xyz', xyz: 'abcd'});
+
+            var updatedData = {test: {id: 123, abc: 'zed', xyz: 'wcw', extra: 'test'}};
+            $httpBackend.expectGET('/test/123').respond(200, updatedData);
+
+           result.get();
+           $httpBackend.flush();
+           expect(result).toEqualData(updatedData.test);
+        });
+
         it('update should handle 204 response', function () {
             var promise, result;
 
@@ -496,6 +520,36 @@ describe('railsResourceFactory', function () {
             $httpBackend.expectDELETE('/test?a=1').respond(200);
             data.$delete('/test', {a: 1});
             $httpBackend.flush();
+        });
+
+        it('should return true for isNew when id undefined', function () {
+            expect(new Test().isNew()).toBeTruthy();
+        });
+
+        it('should return true for isNew when id is null', function () {
+            expect(new Test({id: null}).isNew()).toBeTruthy();
+        });
+
+        it('should return false for isNew when id is set', function () {
+            expect(new Test({id: 1}).isNew()).toBeFalsy();
+        });
+
+        describe('overridden idAttribute', function () {
+            beforeEach(inject(function (_$httpBackend_, _$rootScope_, railsResourceFactory) {
+                Test = railsResourceFactory({url: '/test', name: 'test', idAttribute: 'xyz'});
+            }));
+
+            it('should return true for isNew when xyz undefined', function () {
+                expect(new Test().isNew()).toBeTruthy();
+            });
+
+            it('should return true for isNew when xyz is null', function () {
+                expect(new Test({xyz: null}).isNew()).toBeTruthy();
+            });
+
+            it('should return false for isNew when xyz is set', function () {
+                expect(new Test({xyz: 1}).isNew()).toBeFalsy();
+            });
         });
     });
 
