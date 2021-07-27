@@ -1,6 +1,12 @@
 # AngularJS Rails Resource
-[![Build Status](https://travis-ci.org/FineLinePrototyping/angularjs-rails-resource.png)](https://travis-ci.org/FineLinePrototyping/angularjs-rails-resource)
 
+## Deprecated
+This project is no longer actively maintained. I was one of the original
+authors of this project but I am no longer working at the company where
+this was developed. The original source repo was deleted so
+I'm uploading a copy here.
+
+## Overview
 A resource factory inspired by $resource from AngularJS and [Misko's recommendation](http://stackoverflow.com/questions/11850025/recommended-way-of-getting-data-from-the-server).
 
 ## Differences from $resource
