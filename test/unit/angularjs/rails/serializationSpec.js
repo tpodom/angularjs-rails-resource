@@ -343,6 +343,52 @@ describe('railsSerializer', function () {
                 expect(result['num_books']).toBe(2);
             });
 
+            it('should add custom attribute to collection from function', function() {
+                var result, authorWithPublisher, serializedBooks,
+                    serializer = createSerializer(function () {
+                        this.serializeWith('books', factory(function() {
+                            this.add('publisherId', function(book) {
+                                return book.publisher.id;
+                            });
+                        }));
+                    });
+                authorWithPublisher = {
+                    books: [
+                        {id: 1, publisher: {id: 3}},
+                        {id: 2, publisher: {id: 4}}
+                    ]
+                };
+                serializedBooks = [
+                    {id: 1, publisher_id: 3, publisher: {id:3}},
+                    {id: 2, publisher_id: 4, publisher: {id:4}}
+                ];
+
+                result = serializer.serialize(authorWithPublisher);
+                expect(result['books']).toEqual(serializedBooks);
+            });
+
+            it('should add custom attribute to collection from constant value', function() {
+                var result, authorWithPublisher, serializedBooks,
+                    serializer = createSerializer(function () {
+                        this.serializeWith('books', factory(function() {
+                            this.add('publisherId', 3);
+                        }));
+                    });
+                authorWithPublisher = {
+                    books: [
+                        {id: 1, publisher: {id: 3}},
+                        {id: 2, publisher: {id: 4}}
+                    ]
+                };
+                serializedBooks = [
+                    {id: 1, publisher_id: 3, publisher: {id:3}},
+                    {id: 2, publisher_id: 3, publisher: {id:4}}
+                ];
+
+                result = serializer.serialize(authorWithPublisher);
+                expect(result['books']).toEqual(serializedBooks);
+            });
+
             it('should use custom serializer for books', function () {
                 var result, serializedBooks, underscored,
                     serializer = createSerializer(function () {
@@ -406,6 +452,108 @@ describe('railsSerializer', function () {
                 result = serializer.deserialize(result);
                 expect(result).toEqual({ id: 1, books: [book]});
             });
+        });
+
+        describe('multiple levels of nested attributes', function () {
+            module('rails');
+
+            angular.module('rails').factory('Campaign', function (railsResourceFactory, railsSerializer) {
+                return railsResourceFactory({
+                    name: 'campaign',
+                    serializer: railsSerializer(function() {
+                        this.resource('emails', 'Email');
+                        this.nestedAttribute('emails');
+                    })
+                });
+            });
+            angular.module('rails').factory('Email', function (railsResourceFactory, railsSerializer) {
+                return railsResourceFactory({
+                    name: 'email',
+                    serializer: railsSerializer(function() {
+                        this.resource('emailTemplate', 'EmailTemplate');
+                        this.nestedAttribute('emailTemplate');
+                    })
+                });
+            });
+            angular.module('rails').factory('EmailTemplate', function (railsResourceFactory) {
+                return railsResourceFactory({name: 'emailTemplate'});
+            });
+
+            it('should add email template as nested attribute', inject(function(Campaign, Email, EmailTemplate) {
+                var campaign = new Campaign({
+                    id: 1,
+                    name: 'Test',
+                    emails: [
+                        new Email({id: 1, name: '50% off', emailTemplate: new EmailTemplate({id: 1, name: 'Discount'})})
+                    ]
+                });
+                var serializedCampaign = {
+                    id: 1, name: 'Test',
+                    emails_attributes: [
+                      {id: 1, name: '50% off', email_template_attributes: { id: 1, name: 'Discount' }}],
+                };
+
+                expect(Campaign.config.serializer.serialize(campaign)).toEqual(serializedCampaign);
+            }));
+        });
+        describe('nested resource collection serialization', function () {
+            module('rails');
+
+            angular.module('rails').factory('Team', function (railsResourceFactory, railsSerializer) {
+                return railsResourceFactory({
+                    name: 'team',
+                    serializer: railsSerializer(function() {
+                        this.nestedAttribute('members');
+                        this.resource('members', 'Member');
+                        this.add('vehicle_id', function(team) {
+                            return team.vehicle.id;
+                        });
+                        this.exclude('vehicle');
+                    })
+                });
+            });
+            angular.module('rails').factory('Member', function (railsResourceFactory, railsSerializer) {
+                return railsResourceFactory({
+                    name: 'member',
+                    serializer: railsSerializer(function() {
+                        this.resource('user', 'User');
+                        this.resource('slot', 'Slot');
+                        this.nestedAttribute('slot');
+                        this.add('user_id', function(member) {
+                            return member.user.id;
+                        });
+                        this.exclude('user');
+                    })
+                });
+            });
+            angular.module('rails').factory('Slot', function (railsResourceFactory) {
+                return railsResourceFactory({name: 'slot'});
+            });
+            angular.module('rails').factory('User', function (railsResourceFactory) {
+                return railsResourceFactory({name: 'user'});
+            });
+            angular.module('rails').factory('Vehicle', function (railsResourceFactory) {
+                return railsResourceFactory({name: 'vehicle'});
+            });
+
+
+            it('should add custom attribute in nested resource', inject(function(Team) {
+                var team1 = new Team({
+                    id: 1,
+                    name: 'Team 1',
+                    vehicle: { id: 123, name: 'Subaru Impreza' },
+                    members: [
+                        { id: 352435, user: { id: 100500, name: 'Andrey' }, slot: { id: 200425, rank_id: 1 } },
+                        { id: 235433, user: { id: 100501, name: 'Anton'  }, slot: { id: 200426, rank_id: 2 } },
+                    ],
+                });
+                var serializedTeam1 = {
+                    id: 1, name: 'Team 1', vehicle_id: 123,
+                    members_attributes: [{id: 352435, user_id: 100500, slot_attributes: { id: 200425, rank_id: 1 }}, {id: 235433, user_id: 100501, slot_attributes: { id: 200426, rank_id: 2 }}],
+                };
+
+                expect(Team.config.serializer.serialize(team1)).toEqual(serializedTeam1);
+            }));
         });
     });
 });

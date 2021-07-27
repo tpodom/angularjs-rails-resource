@@ -1,3 +1,61 @@
+<a name="2.3.1"></a>
+# 2.3.1
+## Bug Fixes
+- Updated bower and NPM distributions to fix invalid main reference for NPM package
+
+<a name="2.3.0"></a>
+# 2.3.0
+## Features
+- Added ability to abort requests - #213 (@saicheg)
+- Support for polymorphic associations - #217 (@odedniv)
+- Added afterDeserialize interceptor phase that runs after deserialization of every resource - #218 (@odedniv)
+
+<a name="2.2.2"></a>
+# 2.2.2
+## Bug Fixes
+- Fixed AngularJS dependency from 1.0.x to 1.x.x - #200 (@shuhei)
+- Fixed URL string interpolation to use <code>idAttribute</code> config setting - #202 (@gannimet)
+
+<a name="2.2.0"></a>
+# 2.2.0
+## Features
+- Allow queryParams for $post, $put and $patch - #197 (@herumtreiber )
+
+<a name="2.1.0"></a>
+# 2.1.0
+## Features
+- Added option for singular resources - #187 (@jnfeinstein)
+- <code>configure</code> now returns the config object. - #176 (@poporul)
+
+<a name="2.0.0"></a>
+# 2.0.0
+## Breaking Changes
+- Renamed <code>Serializer.serializeValue</code> to <code>Serializer.serializeData</code> and added new <code>Serializer.serializeObject</code> method. - #149 (@andrey-abramow)
+
+<a name="1.2.3"></a>
+# 1.2.3
+## Bug Fixes
+- Apply custom serialization attributes before doing full serialization - #148 (@envek)
+
+<a name="1.2.2"></a>
+# 1.2.2
+## Bug Fixes
+- Add support for adding custom attributes when serializing arrays - #143 (@shuhei)
+- Force constructor to unwrap as an object - #134 (@tuvistavie)
+
+<a name="1.2.1"></a>
+# 1.2.1
+## Bug Fixes
+- Call beforeResponse interceptor only once - #139 (@shuhei)
+
+<a name="1.2.0"></a>
+# 1.2.0
+## Bug Fixes
+
+## Features
+- Added <code>unsnappedChanges()</code> function to snapshots mixin to check whether or not there have been any changes since the last snapshot was taken. - #125 (@StevenClontz)
+- Added <code>skipRequestProcessing</code> override configuration option to $http, $post, $put, $patch to bypass request processing (root wrapping, serialization) and request interceptor chains - #123 (@mayhewluke)
+
 <a name="1.1.0"></a>
 # 1.1.0
 ## Bug Fixes
@@ -5,12 +63,12 @@
 ## Features
 - Added <code>idAttribute</code> configuration option to allow customizing the unique id field on resources. - #114 (@inlineblock)
 - Added <code>get</code> instance method to refresh resources from the server. - #115 (@wwilkins)
- 
+
 <a name="1.0.1"></a>
 # 1.0.1
 ## Bug Fixes
 - <code>response.originalData</code> was not being saved off before the root unwrapping so it didn't match the original response data as intended. @Ditchou
- 
+
 
 <a name="1.0.0"></a>
 # 1.0.0
