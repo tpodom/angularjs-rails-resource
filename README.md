@@ -61,8 +61,8 @@ Install via [Bower](http://bower.io): `bower install angularjs-rails-resource --
 
 ### Standalone
 If you aren't using the Rails asset pipeline you can download the combined
-[angularjs-rails-resource.js](https://github.com/FineLinePrototyping/dist-angularjs-rails-resource/blob/master/angularjs-rails-resource.js)
-or [angularjs-rails-resource.min.js](https://github.com/FineLinePrototyping/dist-angularjs-rails-resource/blob/master/angularjs-rails-resource.min.js).
+[angularjs-rails-resource.js](https://github.com/tpodom/dist-angularjs-rails-resource/blob/master/angularjs-rails-resource.js)
+or [angularjs-rails-resource.min.js](https://github.com/tpodom/dist-angularjs-rails-resource/blob/master/angularjs-rails-resource.min.js).
 
 You can also use [Bower](http://bower.io/) to install <code>angularjs-rails-resource</code>.
 
